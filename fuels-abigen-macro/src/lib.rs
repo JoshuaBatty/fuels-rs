@@ -87,7 +87,7 @@ impl ParseInner for ContractArgs {
         input.parse::<Token![,]>()?;
 
         let (span, abi) = {
-            let literal = input.parse::<LitStr>()?;
+            let literal = input.parse::<LitStr>()?; 
             (literal.span(), literal.value())
         };
         if !input.is_empty() {
@@ -97,3 +97,4 @@ impl ParseInner for ContractArgs {
         Ok((span, ContractArgs { name, abi }))
     }
 }
+

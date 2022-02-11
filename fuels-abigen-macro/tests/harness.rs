@@ -18,8 +18,8 @@ async fn compile_bindings_from_contract_file() {
     // Generates the bindings from an ABI definition in a JSON file
     // The generated bindings can be accessed through `SimpleContract`.
     abigen!(
-        SimpleContract,
-        "fuels-abigen-macro/tests/takes_ints_returns_bool.json",
+        //SimpleContract,include_str!("takes_ints_returns_bool.json")
+        SimpleContract,"takes_ints_returns_bool.json"
     );
 
     let fuel_client = setup_local_node().await;

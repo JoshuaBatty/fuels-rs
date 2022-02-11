@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::path::{Path, PathBuf};
 
 use crate::code_gen::bindings::ContractBindings;
 use crate::code_gen::custom_types_gen::{
@@ -37,10 +38,18 @@ pub struct Abigen {
     no_std: bool,
 }
 
+
 impl Abigen {
     /// Creates a new contract with the given ABI JSON source.
     pub fn new<S: AsRef<str>>(contract_name: &str, abi_source: S) -> Result<Self, Error> {
         let source = Source::parse(abi_source).unwrap();
+        // Match on source, if it is a String(string) then use rodrigo's code
+        // if it is a path then use my code below.
+        
+        //let path = resolve_path(file!(), abi_source).unwrap();
+        //let source: String = std::fs::read_to_string(path).unwrap().parse().unwrap();
+        //let mut parsed_abi: JsonABI = serde_json::from_str(&source)?;
+        
         let mut parsed_abi: JsonABI = serde_json::from_str(&source.get().unwrap())?;
 
         // Filter out outputs with empty returns. These are

@@ -18,6 +18,8 @@ proc-macro2 = "1.0"
 quote = "1.0"
 rand = "0.8"
 syn = "1.0.12"
+# syntex_errors = "0.59.1"
+load_file = "1.0.1"
 
 [dev-dependencies]
 fuel-core = { version = "0.3", default-features = false }

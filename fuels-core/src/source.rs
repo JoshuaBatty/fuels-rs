@@ -45,7 +45,11 @@ impl Source {
             return Ok(Source::String(source.to_owned()));
         }
         let root = env::current_dir()?.canonicalize()?;
-        Source::with_root(root, source)
+        println!("Root {:?} || Source {:?} ||  file()! {:?}", root, source, file!());
+
+        let path = resolve_path(file!(), source).unwrap();
+        Ok(Source::local(path))
+        // Source::with_root(root, source)
     }
 
     /// Parses an artifact source from a string and a specified root directory
@@ -65,7 +69,10 @@ impl Source {
         let url = base.join(source.as_ref())?;
 
         match url.scheme() {
-            "file" => Ok(Source::local(url.path())),
+            "file" => {
+                println!("URL Path: {:?}", url.path());
+                Ok(Source::local(url.path()))
+            }, 
             // TODO: support other URL schemes (http, etc)
             _ => Err(anyhow!("unsupported URL '{}'", url)),
         }
@@ -88,6 +95,13 @@ impl Source {
             Source::String(abi) => Ok(abi.clone()),
         }
     }
+}
+
+fn resolve_path(base: &str, rel: &str) -> Result<PathBuf, &'static str> {
+    Ok(Path::new(base)
+        .parent()
+        .ok_or("invalid source file path")?
+        .join(rel))
 }
 
 fn get_local_contract(path: &Path) -> Result<String> {
