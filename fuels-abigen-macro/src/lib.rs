@@ -6,11 +6,47 @@ use std::ops::Deref;
 use syn::parse::{Parse, ParseStream, Result as ParseResult};
 use syn::{parse_macro_input, Ident, LitStr, Token};
 
+#[derive(Debug)]
+struct FileName {
+    filename: String,
+}
+
+impl Parse for FileName {
+
+    fn parse(input: ParseStream) -> syn::parse::Result<Self> {
+        let name = input.parse::<Ident>()?.to_string();
+        println!("name = {:?}", name);
+
+        let name = input.parse::<syn::Expr>()?;
+        println!("name = {:?}", name);
+
+        let lit_file: syn::LitStr = input.parse()?;
+        Ok(Self { filename: lit_file.value() })
+    }
+}
+
 /// Abigen proc macro definition and helper functions/types.
 
 #[proc_macro]
 pub fn abigen(input: TokenStream) -> TokenStream {
     let args = parse_macro_input!(input as Spanned<ContractArgs>);
+    let file_path_str = args.abi.clone();
+    let result = quote::quote!(
+        $include_str!(#file_path_str)
+    );
+
+    let source = file_path_str.trim();
+    if source.starts_with('[') || source.starts_with("\n") {
+        //println!("file = {:?}", source);
+    } else {
+        //println!("sdasdasd");
+        //let parsed = syn::parse_macro_input!(result as FileName);
+        //let parsed: Result<syn::Expr, syn::Error> = syn::parse2::<syn::Expr>(result);
+        let parsed: Result<syn::LitStr, syn::Error>= syn::parse_str::<syn::LitStr>(&result.to_string());
+        println!("PARSED {:#?}", parsed);
+    }
+
+    
 
     let c = Abigen::new(&args.name, &args.abi).unwrap();
 

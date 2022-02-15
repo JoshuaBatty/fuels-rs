@@ -45,7 +45,7 @@ impl Abigen {
         let source = Source::parse(abi_source).unwrap();
         // Match on source, if it is a String(string) then use rodrigo's code
         // if it is a path then use my code below.
-        
+        //println!("Abi gen file!() = {:?}", file!());
         //let path = resolve_path(file!(), abi_source).unwrap();
         //let source: String = std::fs::read_to_string(path).unwrap().parse().unwrap();
         //let mut parsed_abi: JsonABI = serde_json::from_str(&source)?;

@@ -45,11 +45,16 @@ impl Source {
             return Ok(Source::String(source.to_owned()));
         }
         let root = env::current_dir()?.canonicalize()?;
-        println!("Root {:?} || Source {:?} ||  file()! {:?}", root, source, file!());
+        //println!("Root {:?} || Source {:?} ||  file()! {:?}", root, source, file!());
 
-        let path = resolve_path(file!(), source).unwrap();
-        Ok(Source::local(path))
-        // Source::with_root(root, source)
+    
+        //println!("CARGO_MANIFEST_DIR = {:?}", env!("CARGO_MANIFEST_DIR"));
+
+        // println!("CARGO_MANIFEST_DIR {:?}", CARGO_MANIFEST_DIR);
+        //let path = resolve_path(file!(), source).unwrap();
+        
+        //Ok(Source::local(path))
+        Source::with_root(root, source)
     }
 
     /// Parses an artifact source from a string and a specified root directory
@@ -67,6 +72,8 @@ impl Source {
             )
         })?;
         let url = base.join(source.as_ref())?;
+
+        //println!("with_root -- base {:?} || url {:?}", &base, &url);
 
         match url.scheme() {
             "file" => {
@@ -98,6 +105,7 @@ impl Source {
 }
 
 fn resolve_path(base: &str, rel: &str) -> Result<PathBuf, &'static str> {
+    //println!("resolve_path -- base {:?} -- parent {:?}", Path::new(base), Path::new(base).parent());
     Ok(Path::new(base)
         .parent()
         .ok_or("invalid source file path")?
@@ -115,10 +123,13 @@ fn get_local_contract(path: &Path) -> Result<String> {
                 path.display(),
             )
         })?;
+        println!("absolute_path = {:?}", absolute_path);
         Cow::Owned(absolute_path)
     } else {
         Cow::Borrowed(path)
     };
+
+    //println!("get_local_contract path = {:?}", path);
 
     let json = fs::read_to_string(&path).context(format!(
         "failed to read artifact JSON file with path {}",
